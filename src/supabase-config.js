@@ -1,8 +1,8 @@
 export function inspectSupabaseConfig(env) {
   const url = (env.VITE_SUPABASE_URL || '').trim();
-  const key = (env.VITE_SUPABASE_ANON_KEY || '').trim();
+  const key = (env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY || '').trim();
   if (!url || !key) {
-    const missing = [!url && 'VITE_SUPABASE_URL', !key && 'VITE_SUPABASE_ANON_KEY'].filter(Boolean);
+    const missing = [!url && 'VITE_SUPABASE_URL', !key && 'VITE_SUPABASE_PUBLISHABLE_KEY (or legacy VITE_SUPABASE_ANON_KEY)'].filter(Boolean);
     return { ok: false, message: `Supabase is not configured. Add ${missing.join(' and ')} to .env.local, then restart Vite.` };
   }
   let parsed;

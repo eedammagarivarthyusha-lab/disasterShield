@@ -5,7 +5,7 @@ import { inspectSupabaseConfig } from '../src/supabase-config.js';
 test('reports exactly which Vite configuration keys are missing', () => {
   const result = inspectSupabaseConfig({});
   assert.equal(result.ok, false);
-  assert.match(result.message, /VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY/);
+  assert.match(result.message, /VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY/);
 });
 
 test('rejects malformed URLs and non-HTTPS remote URLs', () => {
@@ -33,4 +33,11 @@ test('accepts a real-looking HTTPS project URL and publishable key', () => {
 
 test('allows HTTP only for local development endpoints', () => {
   assert.equal(inspectSupabaseConfig({ VITE_SUPABASE_URL: 'http://127.0.0.1:54321', VITE_SUPABASE_ANON_KEY: 'local-test-key' }).ok, true);
+});
+
+test('prefers the publishable key and retains the legacy anon key fallback', () => {
+  const publishable = inspectSupabaseConfig({ VITE_SUPABASE_URL: 'https://abcd1234.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test-key' });
+  const legacy = inspectSupabaseConfig({ VITE_SUPABASE_URL: 'https://abcd1234.supabase.co', VITE_SUPABASE_ANON_KEY: 'legacy-anon-key' });
+  assert.equal(publishable.ok, true);
+  assert.equal(legacy.ok, true);
 });
